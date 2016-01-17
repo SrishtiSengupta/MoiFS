@@ -35,14 +35,38 @@ void moi_ls(char* path){
 	}
 }
 
-void moi_fput(){
-	
+void moi_fput(char* path){
+	char file_input[SIZE];
+	FILE *fp;
+
+	fp = fopen(path, "w+");
+	printf("Enter contents of file: ");
+	scanf(" %[^\n]s", file_input);
+	fputs(file_input, fp);
+	fclose(fp);
 }
 
-void moi_fget(){
+void moi_fget(char *path){
+	FILE *fp;
+	char c;
+
+    fp = fopen(path, "r");
+    if (fp == NULL){
+        printf("Cannot open file! \n");
+        exit(0);
+    }
+
+    c = fgetc(fp);
+    while (c != EOF){
+        printf ("%c", c);
+        c = fgetc(fp);
+    }
+    printf("\n");
+ 
+    fclose(fp);
 }
 
-void moi_create_dir(){
+void moi_create_dir(char* path){
 }
  
 int main(int argc , char *argv[])
@@ -123,11 +147,11 @@ int main(int argc , char *argv[])
 			}
 
 			if(strcmp(command, "fget") == 0){
-				moi_fget();
+				moi_fget(path);
 			}
 
 			if(strcmp(command, "create_dir") == 0){
-				moi_create_dir();
+				moi_create_dir(path);
 			}
 
 			exit(1);	
