@@ -49,9 +49,12 @@ void moi_fput(char* path){
 	printf("Enter contents of file: ");
 	scanf(" %[^\n]s", file_input);
 	fputs(file_input, fp);
-	printf("Enter file permissions for users and groups.\nFORMAT: <filename>; user permissions; group permissions;\n");
+	fputs(path, fp_);
+	fputs("|", fp_);
+	printf("Enter file permissions for users and groups.\nFORMAT: creator|user permissions|group permissions\n");
 	scanf(" %[^\n]s", permissions);
 	fputs(permissions, fp_);
+	fputs("\n", fp_);
 	fclose(fp);
 	fclose(fp_);
 
@@ -101,14 +104,56 @@ void moi_create_dir(char* path){
                     *p = 0;
                     mkdir(tmp, S_IRWXU);
                     *p = '/';
-                    printf("Enter directory permissions for users and groups.\nFORMAT: <filename>; user permissions; group permissions;\n");
+                    resolve_path(path);
+                    fputs(path, fp);
+                    fputs("|", fp);
+                    printf("Enter directory permissions for users and groups.\nFORMAT: creator|user permissions|group permissions\n");
                     scanf(" %[^\n]s", dir_permissions);
 					fputs(dir_permissions, fp);
+					fputs("\n", fp);
             }
     mkdir(tmp, S_IRWXU);
     fclose(fp);
+}
 
-    //store permissions for each directory recursively created in directory_permissions
+void resolve_path(char* path)
+	{
+		char resolved_path[SIZE];
+		realpath(path, resolved_path);
+		strcpy(path, resolved_path);
+	}
+
+void authenticate_user(char* username){
+	FILE * fp;
+	char * line = NULL;
+	size_t len = 0;
+	ssize_t read;
+	int flag = 0;
+
+	fp = fopen("users.txt", "r");
+	if (fp == NULL)
+		exit(EXIT_FAILURE);
+
+	while ((read = getline(&line, &len, fp)) != -1) {
+		int i;
+		remove_newline_char(line);
+		i = strcmp(username, line);
+		if(i == 0){
+			flag = 1;
+			break;
+		}
+	}
+
+	if(flag == 0){
+		printf("You are not authenticated!\n");
+		exit(EXIT_SUCCESS);
+	}
+	else
+		printf("You have been successfully authenticated!\n");
+
+	fclose(fp);
+	if (line)
+		free(line);
 }
  
 int main(int argc , char *argv[])
@@ -143,13 +188,15 @@ int main(int argc , char *argv[])
 	puts("");
 	 
 	printf("Username : ");
-	scanf("%s" , username);
+	scanf(" %[^\n]s", username);
 
 	puts("");
 	puts("          ***********************************          ");
 	puts("***************** Authenticating User *****************");
 	puts("          ***********************************          ");
 	puts("");
+
+	authenticate_user(username);
 
 	//Send some data
 	send(sock , username , SIZE , 0);
@@ -179,16 +226,20 @@ int main(int argc , char *argv[])
 			printf("Path: ");
 			scanf(" %[^\n]s", path);
 			remove_newline_char(path);
+			// resolve_path(path);
 
 			if(strcmp(command, "ls") == 0){
+				resolve_path(path);
 				moi_ls(path);
 			}
 
 			else if(strcmp(command, "fput") == 0){
+				resolve_path(path);
 				moi_fput(path);
 			}
 
 			else if(strcmp(command, "fget") == 0){
+				resolve_path(path);
 				moi_fget(path);
 			}
 

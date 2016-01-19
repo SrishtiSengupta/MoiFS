@@ -103,7 +103,7 @@ void *connection_handler(void *socket_desc)
 
     char tmp[SIZE];
 
-    strcpy(tmp,"You have been successfully authenticated. Connected to server.");
+    strcpy(tmp,"Connected to server.");
     send(sock, tmp, SIZE,0);
 
 /*

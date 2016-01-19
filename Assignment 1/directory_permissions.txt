@@ -1,1 +1,5 @@
-t1;u1,u2;u3t2;u4;u3t3;u2;u3
+simple_slash/t1/t2|u1,u2|u3
+simple_slash/t1/t2|u2,u3|u5
+/home/srishti/Documents/Security Engineering/MoiFS/Assignment 1/simple_slash/p1|u1,u2|u6
+/home/srishti/Documents/Security Engineering/MoiFS/Assignment 1/simple_slash/p1|u2,u3|u4
+/home/srishti/Documents/Security Engineering/MoiFS/Assignment 1/simple_slash/p1|u1,u2|u4
