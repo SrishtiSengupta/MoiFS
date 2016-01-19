@@ -1,0 +1,18 @@
+=============
+README:
+=============
+
+Assumptions:
+1. Directory names and file names cannot be same in the same directory. This is to avoid any conflicts in permission storage
+2. A creator of a file/directory can only set it's permissions once. If it needs to be changed, one needs to login as root_user. The root_user has access to the "file_permissions.txt" file. Therfore, it can be editied to add or remove permissions for any desired file/directory.
+
+INSTALLATION:
+Compile using the Makefile provided.
+
+1. `make`
+2. run `./server`
+3. run multiple clients in different terminal windows/tabs using `./client`
+
+
+BUGS,ATTACKS,ERRORS:
+1. Even if relative path is provided, 

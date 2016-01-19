@@ -61,11 +61,12 @@ int permission_check(char* filename, char* path, char* username){
 		int i;
 		i = strcmp(string_arr[0], path);
 		if(i == 0){
+
 			printf("Path exists!\n");
 
 			if (strstr(string_arr[1], username) != NULL){
 				printf("User is creator\n");
-				flag = 1;
+				flag = 2;
 			}
 
 			else if (strstr(string_arr[2], username) != NULL){
@@ -86,6 +87,7 @@ int permission_check(char* filename, char* path, char* username){
 			// printf("%s\n", string_arr[2]);
 			// printf("%s\n", string_arr[3]);
 		}
+
 	}
 
 	return flag;
@@ -126,7 +128,7 @@ void authenticate_user(char* username){
 
 
 void moi_ls(char* path, char* username){
-	
+
 	DIR *dir;
 	struct dirent *dp;
 	
@@ -135,14 +137,65 @@ void moi_ls(char* path, char* username){
 		exit(1);
 	}
 
-	dir = opendir(path);
-	while((dp = readdir(dir)) != NULL){
-		printf("%s\n", dp -> d_name);
+	// printf("FILE/DIRECTORY                    USER PERMISSIONS                    GROUP PERMISSIONS\n");
+	
+	//char array to store string parts
+	const char *string_arr[SIZE];
+	char filename[SIZE];
+	strcpy(filename, "file_permissions.txt");
+	
+	char* delim;
+	char copy[SIZE];
+	int flag = 0;
+
+	FILE * fp;
+	char * line = NULL;
+	size_t len = 0;
+	ssize_t read;
+
+	fp = fopen(filename, "r");
+	if (fp == NULL)
+		exit(EXIT_FAILURE);
+
+	while ((read = getline(&line, &len, fp)) != -1) {
+		remove_newline_char(line);
+		strcpy(copy, line);
+
+		//after reading line, break it on basis of delimiter and store in string_arr[]
+		delim = strtok(copy,"|");
+		int num = 0;
+		while(delim != NULL){
+			string_arr[num] = delim;
+			delim = strtok (NULL, "|");
+			num++;
+		}
+
+		dir = opendir(path);
+		while((dp = readdir(dir)) != NULL){
+			if(strstr(string_arr[0], (dp -> d_name)) != NULL){
+				printf("%s\t\t\t\t%s\t\t\t\t%s\t\t\t\t%s\n", dp -> d_name, string_arr[1], string_arr[2], string_arr[3]);
+			}
+		}
 	}
 
-	//print user, group permissions alongside filename
+
+	// // simple ls command
+	// dir = opendir(path);
+	// while((dp = readdir(dir)) != NULL){
+	// 	printf("%s\n", dp -> d_name);
+	// }
 
 }
+
+/*CONDITIONS FOR fput*/
+
+//check if the user is the creator. If yes, then he should be able to edit the permissions. We would also need to remove
+//the entry for the already existent permission for this path from the permissions file
+
+//if the user is not the creator but has permissions for the file, he should be able to edit it, but should not be able
+//to edit the permissions
+
+//the only case left is where a user doesn't have permissions for that file, so he should not be able to edit it.
 
 void moi_fput(char* path, char* username){
 	char file_input[SIZE];
@@ -151,8 +204,45 @@ void moi_fput(char* path, char* username){
 	char filename[SIZE];
     strcpy(filename,"file_permissions.txt");
 
-    //check whether user is permitted to write to existing file
-    if (permission_check(filename, path, username)){
+    // flag = 2, when user is the creator of the file and can edit contents and permissions of that file
+    //PROBLEM: having a duplicate entry in the permission file. NEED TO REMOVE THAT line. This I am not able to so,
+    //so I am making the assumption that, once the permissions for the file are set, they cannot be edited by the user
+    if (permission_check(filename, path, username) == 2){
+
+		FILE *fp;
+		// FILE *fp_;
+
+		fp = fopen(path, "w+");
+		// fp_ = fopen("file_permissions.txt", "a");
+		printf("Enter contents of file: ");
+		scanf(" %[^\n]s", file_input);
+		fputs(file_input, fp);
+		// fputs(path, fp_);
+		// fputs("|", fp_);
+		// printf("Enter file permissions for users and groups.\nFORMAT: creator|user permissions|group permissions\n");
+		// scanf(" %[^\n]s", permissions);
+		// fputs(permissions, fp_);
+		// fputs("\n", fp_);
+		fclose(fp);
+		// fclose(fp_);
+    	
+    }
+
+    //flag = 1, means that the user/group has permissions to view and edit that file, but not the permissions
+    if (permission_check(filename, path, username) == 1){
+
+		FILE *fp;
+
+		fp = fopen(path, "w+");
+		printf("Enter contents of file: ");
+		scanf(" %[^\n]s", file_input);
+		fputs(file_input, fp);
+		fclose(fp);
+    	
+    }
+
+    //flag = 0, means that a new file is being created
+    if (permission_check(filename, path, username) == 0){
 
 		FILE *fp;
 		FILE *fp_;
@@ -171,9 +261,8 @@ void moi_fput(char* path, char* username){
 		fclose(fp);
 		fclose(fp_);
     	
-    }
+    }    
 
-	//check for whether file already exists. If it does then rewrite the permissions, else append to file
 }
 
 void moi_fget(char *path, char* username){
@@ -189,7 +278,7 @@ void moi_fget(char *path, char* username){
     //check whether user is permitted to read that file
     char filename[SIZE];
     strcpy(filename,"file_permissions.txt");
-    if (permission_check(filename, path, username)){
+    if (permission_check(filename, path, username)!=0){
 	    c = fgetc(fp);
 	    while (c != EOF){
 	        printf ("%c", c);
@@ -214,7 +303,7 @@ void moi_create_dir(char* path, char* username){
 	char dir_permissions[SIZE];
 	FILE *fp;
 
-	fp = fopen("directory_permissions.txt", "a");
+	fp = fopen("file_permissions.txt", "a");
 
 	snprintf(tmp, sizeof(tmp),"%s",path);
     len = strlen(tmp);
@@ -223,15 +312,20 @@ void moi_create_dir(char* path, char* username){
     for(p = tmp + 1; *p; p++)
             if(*p == '/') {
                     *p = 0;
+                    
                     mkdir(tmp, S_IRWXU);
                     *p = '/';
-                    get_absolute_path(path);
-                    fputs(path, fp);
-                    fputs("|", fp);
-                    printf("Enter directory permissions for users and groups.\nFORMAT: creator|user permissions|group permissions\n");
-                    scanf(" %[^\n]s", dir_permissions);
-					fputs(dir_permissions, fp);
-					fputs("\n", fp);
+
+                    get_absolute_path(tmp);
+                    printf("%s\n", tmp);
+
+     //                get_absolute_path(path);
+     //                fputs(path, fp);
+     //                fputs("|", fp);
+     //                printf("Enter directory permissions for users and groups.\nFORMAT: creator|user permissions|group permissions\n");
+     //                scanf(" %[^\n]s", dir_permissions);
+					// fputs(dir_permissions, fp);
+					// fputs("\n", fp);
             }
     mkdir(tmp, S_IRWXU);
     fclose(fp);

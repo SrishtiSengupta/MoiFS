@@ -1,4 +1,17 @@
-/home/srishti/Documents/Security Engineering/MoiFS/Assignment 1/simple_slash/newfile|u2|u3|u4
-/home/srishti/Documents/Security Engineering/MoiFS/Assignment 1/simple_slash/new|u2|u5,u3|u4,u1
-/home/srishti/Documents/Security Engineering/MoiFS/Assignment 1/simple_slash/new1|u2|u1,u2|u5
-/home/srishti/Documents/Security Engineering/MoiFS/Assignment 1/simple_slash/new|u1|u2,u3|u5
+/home/srishti/Documents/Security Engineering/MoiFS/Assignment 1/client.c|root_user| | 
+/home/srishti/Documents/Security Engineering/MoiFS/Assignment 1/client|root_user| | 
+/home/srishti/Documents/Security Engineering/MoiFS/Assignment 1/server.c|root_user| | 
+/home/srishti/Documents/Security Engineering/MoiFS/Assignment 1/server|root_user| | 
+/home/srishti/Documents/Security Engineering/MoiFS/Assignment 1/README|root_user| | 
+/home/srishti/Documents/Security Engineering/MoiFS/Assignment 1/file_permissions.txt|root_user| | 
+/home/srishti/Documents/Security Engineering/MoiFS/Assignment 1/users.txt|root_user| | 
+/home/srishti/Documents/Security Engineering/MoiFS/Assignment 1/simple_slash|root_user| | 
+/home/srishti/Documents/Security Engineering/MoiFS/Assignment 1/simple_slash/simple_home|root_user| | 
+/home/srishti/Documents/Security Engineering/MoiFS/Assignment 1/simple_slash/simple_home/u1|root_user| | 
+/home/srishti/Documents/Security Engineering/MoiFS/Assignment 1/simple_slash/simple_home/u2|root_user| | 
+/home/srishti/Documents/Security Engineering/MoiFS/Assignment 1/simple_slash/simple_home/u3|root_user| | 
+/home/srishti/Documents/Security Engineering/MoiFS/Assignment 1/simple_slash/simple_home/u4|root_user| | 
+/home/srishti/Documents/Security Engineering/MoiFS/Assignment 1/simple_slash/file1|u1|u3|u4
+/home/srishti/Documents/Security Engineering/MoiFS/Assignment 1/simple_slash/file2|u2|u5,u3|u4,u1
+/home/srishti/Documents/Security Engineering/MoiFS/Assignment 1/simple_slash/file3|u2|u1,u2|u5
+/home/srishti/Documents/Security Engineering/MoiFS/Assignment 1/simple_slash/file4|u3|u1|u2,u4
