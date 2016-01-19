@@ -147,24 +147,32 @@ void moi_ls(char* path, char* username){
 void moi_fput(char* path, char* username){
 	char file_input[SIZE];
 	char permissions[SIZE];
-	FILE *fp;
-	FILE *fp_;
 
-	fp = fopen(path, "w+");
-	fp_ = fopen("file_permissions.txt", "a");
-	printf("Enter contents of file: ");
-	scanf(" %[^\n]s", file_input);
-	fputs(file_input, fp);
-	fputs(path, fp_);
-	fputs("|", fp_);
-	printf("Enter file permissions for users and groups.\nFORMAT: creator|user permissions|group permissions\n");
-	scanf(" %[^\n]s", permissions);
-	fputs(permissions, fp_);
-	fputs("\n", fp_);
-	fclose(fp);
-	fclose(fp_);
+	char filename[SIZE];
+    strcpy(filename,"file_permissions.txt");
 
-	//check whether user is permitted to write to existing file
+    //check whether user is permitted to write to existing file
+    if (permission_check(filename, path, username)){
+
+		FILE *fp;
+		FILE *fp_;
+
+		fp = fopen(path, "w+");
+		fp_ = fopen("file_permissions.txt", "a");
+		printf("Enter contents of file: ");
+		scanf(" %[^\n]s", file_input);
+		fputs(file_input, fp);
+		fputs(path, fp_);
+		fputs("|", fp_);
+		printf("Enter file permissions for users and groups.\nFORMAT: creator|user permissions|group permissions\n");
+		scanf(" %[^\n]s", permissions);
+		fputs(permissions, fp_);
+		fputs("\n", fp_);
+		fclose(fp);
+		fclose(fp_);
+    	
+    }
+
 	//check for whether file already exists. If it does then rewrite the permissions, else append to file
 }
 
@@ -181,16 +189,19 @@ void moi_fget(char *path, char* username){
     //check whether user is permitted to read that file
     char filename[SIZE];
     strcpy(filename,"file_permissions.txt");
-    permission_check(filename, path, username);
-
-    c = fgetc(fp);
-    while (c != EOF){
-        printf ("%c", c);
-        c = fgetc(fp);
+    if (permission_check(filename, path, username)){
+	    c = fgetc(fp);
+	    while (c != EOF){
+	        printf ("%c", c);
+	        c = fgetc(fp);
+	    }
+	    printf("\n");
+	 
+	    fclose(fp);
     }
-    printf("\n");
- 
-    fclose(fp);
+    else{
+    	fclose(fp);
+    }
 
 }
 
